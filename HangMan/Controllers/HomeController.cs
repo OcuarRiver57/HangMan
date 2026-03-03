@@ -10,6 +10,14 @@ namespace HangMan.Controllers
         {
             return View();
         }
+        public IActionResult History()
+        {
+            return View();
+        }
+        public IActionResult Leaderboard()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

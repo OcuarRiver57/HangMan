@@ -2,10 +2,16 @@
 {
     public class Player
     {
+        public Player() { }
+        public Player(string username, string password)
+        {
+            Username = username;
+            Password = password;
+        }
 
         public int Id { get; set; }
-        public required string Username { get; set; }
-        public required string Password { get; set; } // encrypt somehow?
+        public string Username { get; set; }
+        public string Password { get; set; } // encrypt somehow?
         public int GamesPlayed { get; set; } = 0;
         public int GamesWon { get; set; } = 0;
         public int GamesLost { get; set; } = 0;

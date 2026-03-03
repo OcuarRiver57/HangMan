@@ -1,9 +1,21 @@
-﻿namespace HangMan.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HangMan.Models
 {
     public class Word
     {
+        public Word() { }
+
+        public Word(string spelling, Category category)
+        {
+            this.Spelling = spelling;
+            this.Category = category;
+            
+        }
         public int Id { get; set; }
-        public required string Spelling { get; set; }
+        [Required(ErrorMessage = "Field is Required")]
+        [StringLength(50)]
+        public string Spelling { get; set; }
         public int Length
         {
             get
@@ -24,5 +36,17 @@
             }
         }
         public Category Category { get; set; }
+        public string Link
+        {
+            get
+            {
+                if (this.Category.Name == "drug")
+                    return $"https://www.drugs.com/{this.Spelling}.html";
+
+                return "https://www.dictionary.com/browse/" + this.Spelling;
+            }
+        }
+        public string DrugClassification { get; set; } = "Not a drug";
+
     }
 }

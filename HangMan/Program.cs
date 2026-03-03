@@ -1,6 +1,7 @@
-using System;
-using CommunitySite.Data;
+using HangMan.Data;
+using HangMan.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,8 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    SeedData s = new();
+    s.Seed(appDbContext);
 }
 
 app.Run();

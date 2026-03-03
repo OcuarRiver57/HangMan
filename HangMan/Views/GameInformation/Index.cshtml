@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Player Stats";
+    string boxClass = "col-4 bg-info-subtle d-flex justify-content-center align-items-center flex-column border border-1";
+}
+@model Player
+<body>
+    <div class="container">
+        <div class="row">
+            <h1 class="d-flex justify-content-center align-items-center">@Model.Username</h1>
+        </div>
+        <div class="row">
+            <div class="@boxClass">
+                <h3>Games Played</h3>
+                <h2>@Model.GamesPlayed</h2>
+            </div>
+
+            <div class="@boxClass">
+                <h3>Games Won</h3>
+                <h2>@Model.GamesWon</h2>
+            </div>
+
+            <div class="@boxClass">
+                <h3>Win / Loss ratio</h3>
+                <h2>@Model.WinLossRatio.ToString("F3")</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="@boxClass">
+                <h3>Longest Word</h3>
+                <h2>@Model.LongestWord</h2>
+            </div>
+
+            <div class="@boxClass">
+                <h3>Total Mistakes</h3>
+                <h2>@Model.MistakesTotal</h2>
+            </div>
+
+            <div class="@boxClass">
+                <h3>Avg Mistakes / Win</h3>
+                <h2>@Model.WinMistakeRatio.ToString("F0")</h2>
+            </div>
+        </div>
+    </div>
+</body>

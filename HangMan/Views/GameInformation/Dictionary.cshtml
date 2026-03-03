@@ -1,5 +1,39 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Dictionary";
 }
+@model FilteredWords
+
+<h2>Word List</h2>
+<a asp-area="" asp-controller="GameInformation" asp-action="AddWord">Add Word</a>
+
+<form asp-controller="GameInformation" asp-action="FilterDictionary" method="post">
+    @Html.AntiForgeryToken()
+    <input type="text" asp-for="Search" value="@Model.Search" />
+    <button type="submit">Search</button>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Word</th>
+            <th>Length</th>
+            <th>Vowels</th>
+            <th>Category</th>
+            <th>Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var w in Model.Words)
+        {
+            <tr>
+                <td>@w.Spelling</td>
+                <td>@w.Length</td>
+                <td>@w.VowelCount</td>
+                <td>@w.Category.Name</td>
+                <td>
+                    <a href="@{@w.Link}" target="_blank" rel="noopener noreferrer">Definition</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

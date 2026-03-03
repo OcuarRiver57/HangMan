@@ -1,5 +1,35 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Settings";
 }
+@model PlayerPreference
+<body>
+    <h1 class="display-4">@ViewData["title"]</h1>
+    <form method="post">
+        <label asp-for="CustomWord">Custom Word:</label>
+        <input type="text" id="CustomWord" asp-for="CustomWord">
+        <span asp-validation-for="CustomWord"></span>
+        <br />
+
+        <label asp-for="MaxWordLength">Max Random Word Length:</label>
+        <input type="number" id="MaxWordLength" asp-for="MaxWordLength">
+        <span asp-validation-for="MaxWordLength"></span>
+        <br />
+
+        <label asp-for="MinWordLength">Minimum Random Word Length:</label>
+        <input type="number" id="MinWordLength" asp-for="MinWordLength">
+        <span asp-validation-for="MinWordLength"></span>
+        <br />
+
+        <label asp-for="Health">Health</label>
+        <input type="number" id="Health" asp-for="Health">
+        <span asp-validation-for="Health"></span>
+        <br />
+
+        <label asp-for="Category">Custom Word:</label>
+        <input type="text" id="Category" asp-for="Category">
+        <span asp-validation-for="Category"></span>
+        <br />
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
