@@ -60,7 +60,14 @@ namespace HangMan.Controllers
         }
         public IActionResult PlayerSettings()
         {
-            return View();
+            PlayerPreference p = new();
+            p.Categories = context.Categories.ToList();
+            return View(p);
+        }
+        [HttpPost]
+        public IActionResult PlayerSettings(PlayerPreference p)
+        {
+            return View(p);
         }
         public IActionResult AddWord()
         {

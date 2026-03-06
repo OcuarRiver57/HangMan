@@ -10,6 +10,6 @@ namespace HangMan.Data
         public DbSet<Player> Players { get; set; }
         public DbSet<Word> Words { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<PlayerPreference> PlayerPreferences { get; set; } 
+        public DbSet<PlayerPreference> PlayerPreferences { get; set; }
     }
 }

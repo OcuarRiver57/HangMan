@@ -1,5 +1,5 @@
 using HangMan.Data;
-using HangMan.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -7,17 +7,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Configuration.AddUserSecrets<Program>();
 
-var conServer = builder.Configuration.GetConnectionString("MySqlConnectionServer");
-var user = builder.Configuration["DbUser"];
+var conDatabase = builder.Configuration.GetConnectionString("MySqlConnection");
+var user = builder.Configuration["DbUser"] ?? "unknownUser";
 var password = builder.Configuration["DbPassword"];
 
-var finalConn = $"{conServer}User={user};Password={password};database=HangManDB";
+var finalConn = $"{conDatabase}User={user};Password={password};";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(finalConn, ServerVersion.AutoDetect(finalConn)));
+    options.UseMySQL(finalConn));
+
+
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CommunitySiteContext>();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -42,8 +47,15 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    SeedData s = new();
-    s.Seed(appDbContext);
+    try 
+    {
+        SeedData s = new(); 
+        s.Seed(appDbContext);
+    } 
+    catch (Exception ex) 
+    {
+        Console.WriteLine("Seeding skipped: " + ex.Message);
+    }
 }
 
 app.Run();

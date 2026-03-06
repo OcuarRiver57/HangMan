@@ -25,11 +25,39 @@
         <span asp-validation-for="Health"></span>
         <br />
 
-        <label asp-for="Category">Custom Word:</label>
-        <input type="text" id="Category" asp-for="Category">
-        <span asp-validation-for="Category"></span>
+        <label asp-for="Category">Category:</label>
+        <select id="CategoryDropDown" asp-for="Category" required>
+            <option value="NewCategory">Add New Category</option>
+            @foreach(Category c in Model.Categories)
+                {
+                <option value=@c>@c.Name</option>
+                }
+        </select>
         <br />
+        <div id="AddNewCatagory" class="pt-4">
+            <label> Add New Catagory</label><br />
+            <label asp-for="Category.Name">Category Name:</label>
+            <input type="text" id="CategoryName" asp-for="Category.Name">
+            <span asp-validation-for="Category.Name"></span>
+            <br />
 
-        <button type="submit">Submit</button>
+            <label asp-for="Category.Description">Category Description:</label>
+            <input type="text" id="CategoryDescription" asp-for="Category.Description">
+            <span asp-validation-for="Category.Description"></span>
+            <br />
+        </div>
+        <button type="submit">Play Custom Game</button>
     </form>
 </body>
+<script>
+    document.getElementById("CategoryDropDown").addEventListener("change", function () {
+        const showValue = "NewCategory";
+        const container = document.getElementById("AddNewCatagory");
+
+        if (this.value === showValue) {
+            container.style.display = "block";
+        } else {
+            container.style.display = "none";
+        }
+    });
+</script>
