@@ -5,12 +5,12 @@ namespace HangMan.Data
 {
     public class SeedData
     {
-        private List<Category> Categories
+        private List<CategoryModel> Categories
         {
             get
             {
                 return
-                    new List<Category>
+                    new List<CategoryModel>
                     {
                         new() { Name = "Furniture", Description = "Common household furniture items such as chairs, tables, and sofas." },
                         new() { Name = "Fast Food", Description = "Popular fast food items from restaurants and chains." },
@@ -31,12 +31,13 @@ namespace HangMan.Data
                         new() { Name = "Body Parts", Description = "Parts of the human body." },
                         new() { Name = "School Supplies", Description = "Items commonly used in school settings." },
                         new() { Name = "Kitchen Appliances", Description = "Appliances found in a typical kitchen." },
-                        new() { Name = "Tools", Description = "Hand tools and power tools." }
+                        new() { Name = "Tools", Description = "Hand tools and power tools." },
+                        new() { Name = "Drugs", Description = "Medication available at a pharmacy." }
                     };
             }
         }
 
-        private List<Word> Words
+        private List<WordModel> Words
         {
             get
             {
@@ -67,7 +68,7 @@ namespace HangMan.Data
                     new() { Spelling = "Sandwich", Category = "Fast Food" },
                     new() { Spelling = "Milkshake", Category = "Fast Food" },
                     new() { Spelling = "Burrito", Category = "Fast Food" },
-                    new() { Spelling = "OnionRings", Category = "Fast Food" },
+                    new() { Spelling = "Onion Rings", Category = "Fast Food" },
                     new() { Spelling = "Pizza", Category = "Fast Food" },
                     new() { Spelling = "Hotdog", Category = "Fast Food" },
                     new() { Spelling = "Wrap", Category = "Fast Food" },
@@ -282,19 +283,18 @@ namespace HangMan.Data
                     new() { Spelling = "Plumber", Category = "Professions" },
                 };
 
-                List<Word> words = new();
+                List<WordModel> words = new();
+
+                var categoryLookup = Categories.ToDictionary(c => c.Name);
 
                 foreach (var w in ws)
                 {
-                    foreach(Category c in this.Categories)
+                    if (categoryLookup.TryGetValue(w.Category, out var category))
                     {
-                        if(w.Category == c.Name)
-                        {
-                            Word newWord = new(w.Spelling, c);
-                            words.Add(newWord);
-                        }
+                        words.Add(new WordModel(w.Spelling, category));
                     }
                 }
+
 
                 return words;
             }
@@ -302,12 +302,13 @@ namespace HangMan.Data
 
         public void Seed(AppDbContext context)
         {
-            if (!context.Categories.Any() && !context.Words.Any())
-            {
+            if (!context.Categories.Any())
                 context.Categories.AddRange(Categories);
+
+            if (!context.Words.Any())
                 context.Words.AddRange(Words);
-                context.SaveChanges();
-            }
+
+            context.SaveChanges();
         }
     }
 }

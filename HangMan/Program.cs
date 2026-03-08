@@ -1,4 +1,5 @@
 using HangMan.Data;
+using HangMan.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,8 +19,9 @@ var finalConn = $"{conDatabase}User={user};Password={password};";
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(finalConn));
 
-
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CommunitySiteContext>();
+builder.Services.AddDefaultIdentity<PlayerModel>(options =>
+    options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
 
@@ -35,9 +37,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",

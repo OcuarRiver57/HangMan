@@ -1,63 +1,41 @@
 ﻿@{
     ViewData["Title"] = "Settings";
 }
-@model PlayerPreference
+@model PlayerPreferenceViewModel
 <body>
     <h1 class="display-4">@ViewData["title"]</h1>
     <form method="post">
-        <label asp-for="CustomWord">Custom Word:</label>
-        <input type="text" id="CustomWord" asp-for="CustomWord">
-        <span asp-validation-for="CustomWord"></span>
+        <label asp-for="Preferences.CustomWord">Custom Word:</label>
+        <input type="text" id="CustomWord" asp-for="Preferences.CustomWord">
+        <span asp-validation-for="Preferences.CustomWord"></span>
         <br />
 
-        <label asp-for="MaxWordLength">Max Random Word Length:</label>
-        <input type="number" id="MaxWordLength" asp-for="MaxWordLength">
-        <span asp-validation-for="MaxWordLength"></span>
+        <label asp-for="Preferences.MaxWordLength">Max Random Word Length:</label>
+        <input type="number" id="Preferences.MaxWordLength" asp-for="Preferences.MaxWordLength">
+        <span asp-validation-for="Preferences.MaxWordLength"></span>
         <br />
 
-        <label asp-for="MinWordLength">Minimum Random Word Length:</label>
-        <input type="number" id="MinWordLength" asp-for="MinWordLength">
-        <span asp-validation-for="MinWordLength"></span>
+        <label asp-for="Preferences.MinWordLength">Minimum Random Word Length:</label>
+        <input type="number" id="MinWordLength" asp-for="Preferences.MinWordLength">
+        <span asp-validation-for="Preferences.MinWordLength"></span>
         <br />
 
-        <label asp-for="Health">Health</label>
-        <input type="number" id="Health" asp-for="Health">
-        <span asp-validation-for="Health"></span>
+        <label asp-for="Preferences.Health">Health</label>
+        <input type="number" id="Health" asp-for="Preferences.Health">
+        <span asp-validation-for="Preferences.Health"></span>
         <br />
 
-        <label asp-for="Category">Category:</label>
-        <select id="CategoryDropDown" asp-for="Category" required>
-            <option value="NewCategory">Add New Category</option>
-            @foreach(Category c in Model.Categories)
+        <label asp-for="Preferences.Category">Category:</label>
+        <select id="CategoryDropDown" asp-for="Preferences.Category" required>
+            @foreach(CategoryModel c in Model.Categories)
                 {
                 <option value=@c>@c.Name</option>
                 }
         </select>
         <br />
-        <div id="AddNewCatagory" class="pt-4">
-            <label> Add New Catagory</label><br />
-            <label asp-for="Category.Name">Category Name:</label>
-            <input type="text" id="CategoryName" asp-for="Category.Name">
-            <span asp-validation-for="Category.Name"></span>
-            <br />
 
-            <label asp-for="Category.Description">Category Description:</label>
-            <input type="text" id="CategoryDescription" asp-for="Category.Description">
-            <span asp-validation-for="Category.Description"></span>
-            <br />
-        </div>
-        <button type="submit">Play Custom Game</button>
+        <button type="submit" name="action" value="save" class="btn btn-success">Save</button>
+        <button type="submit" name="action" value="start" class="btn btn-primary">Start Game</button>
+
     </form>
 </body>
-<script>
-    document.getElementById("CategoryDropDown").addEventListener("change", function () {
-        const showValue = "NewCategory";
-        const container = document.getElementById("AddNewCatagory");
-
-        if (this.value === showValue) {
-            container.style.display = "block";
-        } else {
-            container.style.display = "none";
-        }
-    });
-</script>

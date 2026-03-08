@@ -2,7 +2,7 @@
 
 namespace HangMan.Models
 {
-    public class Category
+    public class CategoryModel
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Category is Required")]

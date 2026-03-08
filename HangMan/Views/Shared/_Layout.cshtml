@@ -20,7 +20,27 @@
                 <li class="nav-link"><a class="nav-link" asp-area="" asp-controller="GameInformation" asp-action="Dictionary">Dictionary</a></li>
                 <li class="nav-link"><a class="nav-link" asp-area="" asp-controller="GameInformation" asp-action="Index">Player Stats</a></li>
                 <li class="nav-link"><a class="nav-link" asp-area="" asp-controller="GameInformation" asp-action="PlayerSettings">Player Settings</a></li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-link px-4">
+                        <a class="nav-link text-dark text-bg-info p-2" asp-area="identity" asp-page="/Account/Logout">Logout</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-link" style="padding-left: 30px">
+                        <a class="nav-link text-dark text-bg-info p-2" asp-area="identity" asp-page="/Account/Register">Register</a>
+                    </li>
+                    <li class="nav-link">
+                        <a class="nav-link text-dark text-bg-info p-2" asp-area="identity" asp-page="/Account/Login">Login</a>
+                    </li>
+
+                }
             </ul>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <p>Logged in as @User.Identity.Name</p>
+            }
         </nav>
     </header>
     <div class="container">

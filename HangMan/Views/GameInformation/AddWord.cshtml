@@ -1,40 +1,63 @@
 ﻿@{
     ViewData["Title"] = "Add Word";
+    //TODO: not properly submitting catagory from drop down
 }
-@model Word
+@model AddWordModel
 
+Model
 <div class="text-center">
     <h1 class="display-4">@ViewData["title"]</h1>
     <form method="post">
-        <label asp-for="Spelling">Word:</label>
-        <input type="text" asp-for="Spelling" placeholder="Please enter a real word" id="AddWordSpellingInput">
-        <span asp-validation-for="Spelling"></span>
+        <label asp-for="Word.Spelling">Word:</label>
+        <input type="text" asp-for="Word.Spelling" placeholder="Please enter a real word" id="AddWordSpellingInput">
+        <span asp-validation-for="Word.Spelling"></span>
         <br />
 
-        <label asp-for="Category.Name">Category:</label>
-        <input type="text" asp-for="Category.Name" placeholder="Please enter category">
-        <span asp-validation-for="Category.Name"></span>
+        <label asp-for="SelectedCategoryName">Category:</label>
+        <select id="CategoryDropDown" asp-for="SelectedCategoryName" required>
+            <option value="NewCategory1234567898765432345678765432134567876543">Add New Category</option>
+            @foreach (CategoryModel c in Model.Categories)
+            {
+                <option value=@c.Name>@c.Name</option>
+            }
+        </select>
         <br />
+        <div id="AddNewCatagory" class="pt-4">
+            <label> Add New Catagory</label><br />
+            <label asp-for="Word.Category.Name">Category Name:</label>
+            <input type="text" id="CategoryName" asp-for="Word.Category.Name">
+            <span asp-validation-for="Word.Category.Name"></span>
+            <br />
 
-        <div style="display:none;" id="DrugClassificationInput" ">
-            <label asp-for="Category.Description">Drug Classification:</label>
-            <input type="text" asp-for="Category.Description" placeholder="Please enter category description">
-            <span asp-validation-for="Category.Description"></span>
+            <label asp-for="Word.Category.Description">Category Description:</label>
+            <input type="text" id="CategoryDescription" asp-for="Word.Category.Description">
+            <span asp-validation-for="Word.Category.Description"></span>
             <br />
         </div>
 
-        @{/*Check if category exists and remove below part if it does*/}
-        <label asp-for="Category.Description">Category Description:</label>
-        <input type="text" asp-for="Category.Description" placeholder="Please enter category description">
-        <span asp-validation-for="Category.Description"></span>
-        <br />
+        <div style="display:none;" id="DrugClassificationInput">
+            <label asp-for="Word.Category.Description">Drug Classification:</label>
+            <input type="text" asp-for="Word.Category.Description" placeholder="Please enter category description">
+            <span asp-validation-for="Word.Category.Description"></span>
+            <br />
+        </div>
 
         <button type="submit">Add Word</button>
     </form>
 </div>
 <script>
-    document.getElementById("Category_Name").addEventListener("change", function () {
-        const showValue = "drug"; 
+    document.getElementById("CategoryDropDown").addEventListener("change", function () {
+        const showValue = "NewCategory1234567898765432345678765432134567876543";
+        const container = document.getElementById("AddNewCatagory");
+
+        if (this.value === showValue) {
+            container.style.display = "block";
+        } else {
+            container.style.display = "none";
+        }
+    });
+    document.getElementById("CategoryName").addEventListener("change", function () {
+        const showValue = "drug";
         const container = document.getElementById("DrugClassificationInput");
 
         if (this.value === showValue) {

@@ -2,20 +2,22 @@
 
 namespace HangMan.Models
 {
-    public class Word
+    public class WordModel
     {
-        public Word() { }
+        public WordModel() { }
 
-        public Word(string spelling, Category category)
+        public WordModel(string spelling, CategoryModel category)
         {
             this.Spelling = spelling;
             this.Category = category;
             
         }
         public int Id { get; set; }
+
         [Required(ErrorMessage = "Field is Required")]
         [StringLength(50)]
         public string Spelling { get; set; }
+
         public int Length
         {
             get
@@ -35,7 +37,9 @@ namespace HangMan.Models
                 return count;
             }
         }
-        public Category Category { get; set; }
+
+        public CategoryModel Category { get; set; }
+
         public string Link
         {
             get
@@ -46,6 +50,7 @@ namespace HangMan.Models
                 return "https://www.dictionary.com/browse/" + this.Spelling;
             }
         }
+
         public string DrugClassification { get; set; } = "Not a drug";
 
     }
