@@ -48,17 +48,20 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
-    var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try 
+    using (var scope = app.Services.CreateScope())
     {
-        SeedData s = new(); 
-        s.Seed(appDbContext);
-    } 
-    catch (Exception ex) 
-    {
-        Console.WriteLine("Seeding skipped: " + ex.Message);
+        var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        try
+        {
+            SeedData s = new();
+            s.Seed(appDbContext);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Seeding skipped: " + ex.Message);
+        }
     }
 }
 

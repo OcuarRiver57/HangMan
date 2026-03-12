@@ -1,0 +1,33 @@
+﻿.word-display {
+    font-size: 2rem;
+    letter-spacing: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.health-display,
+.incorrect-display {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.guess-input {
+    display: block;
+    margin: 10px auto;
+    width: 60px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.guess-button {
+    display: block;
+    margin: 10px auto;
+    padding: 8px 20px;
+    font-size: 1rem;
+}
+
+#game-root {
+    max-width: 500px;
+    margin: auto;
+    padding-top: 40px;
+}

@@ -101,9 +101,6 @@ namespace HangMan.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("PreferencesPlayerId")
-                        .HasColumnType("varchar(255)");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
@@ -122,8 +119,6 @@ namespace HangMan.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
-
-                    b.HasIndex("PreferencesPlayerId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -310,15 +305,6 @@ namespace HangMan.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("HangMan.Models.PlayerModel", b =>
-                {
-                    b.HasOne("HangMan.Models.PlayerPreferenceModel", "Preferences")
-                        .WithMany()
-                        .HasForeignKey("PreferencesPlayerId");
-
-                    b.Navigation("Preferences");
                 });
 
             modelBuilder.Entity("HangMan.Models.WordModel", b =>

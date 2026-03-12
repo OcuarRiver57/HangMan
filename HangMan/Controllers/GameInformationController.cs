@@ -1,6 +1,7 @@
 ﻿using HangMan.Data;
 using HangMan.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
@@ -11,33 +12,19 @@ namespace HangMan.Controllers
 {
     public class GameInformationController : Controller
     {
-        private readonly AppDbContext context;
+        private AppDbContext context;
+        
+        private UserManager<PlayerModel> userManager;
 
-        public GameInformationController(AppDbContext c)
+        public GameInformationController(AppDbContext c, UserManager<PlayerModel> u)
         {
             this.context = c;
+            this.userManager = u;
         }
-        public IActionResult Index() //player stats page
+        public async Task<IActionResult> Index() //player stats page
         {
-            PlayerModel p = new()
-            {
-                UserName = "xx_Username_xx",
-                GamesPlayed = 100,
-                GamesWon = 25,
-                GamesLost = 75,
-                LongestWord = "FiberOptics",
-                MistakesWithWin = 75,
-                MistakesTotal = 420
-            };
-
-            return View(p);
-
-            //return View(context.CurrentPlayer)
-        }
-        [HttpPost]
-        public IActionResult Index(PlayerModel p)
-        {
-            return View(p);
+            var user = await userManager.GetUserAsync(User);
+            return View(user);
         }
 
         public IActionResult Dictionary()
@@ -82,14 +69,31 @@ namespace HangMan.Controllers
         [Authorize]
         public IActionResult PlayerSettings()
         {
-            PlayerPreferenceViewModel p = new(new PlayerPreferenceModel(), context.Categories.ToList());
+            var userId = userManager.GetUserId(User);
+            var pref = context.PlayerPreferences
+                    .FirstOrDefault(p => p.PlayerId == userId);
+            if (pref == null)
+            {
+                pref = new PlayerPreferenceModel
+                {
+                    PlayerId = userId
+                };
+                context.PlayerPreferences.Add(pref);
+                context.SaveChanges();
+            }
+                
+
+            PlayerPreferenceViewModel p = new(pref, context.Categories.ToList());
             return View(p);
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult PlayerSettings(PlayerPreferenceViewModel p, string action)
         {
-            p.Preferences.PlayerId = User.Identity.Name;
+            if(string.IsNullOrWhiteSpace(p.Preferences.PlayerId))
+                p.Preferences.PlayerId = User.Identity.Name;
+
             if (context.PlayerPreferences.Any(m => m.PlayerId == p.Preferences.PlayerId))
             {
                 var dm = context.PlayerPreferences.Find(p.Preferences.PlayerId);
@@ -115,14 +119,18 @@ namespace HangMan.Controllers
         [HttpPost] 
         public IActionResult AddWord(AddWordModel awm)
         {
-            if (awm.SelectedCategoryName == "NewCategory1234567898765432345678765432134567876543"
-                && context.Categories.Any(c => EF.Functions.Like(c.Name, awm.Word.Category.Name))) 
-                context.Categories.Add(awm.Word.Category);
+            if (awm.SelectedCategoryName == "NewCategory1234567898765432345678765432134567876543")
+            {
+                if (!string.IsNullOrWhiteSpace(awm.Word.Category?.Name)
+                    && !context.Categories.Any(c => c.Name == awm.Word.Category.Name))
+                {
+                    context.Categories.Add(awm.Word.Category);
+                }
+            }
             else
             {
                 awm.Word.Category = context.Categories
-                    .Where(c => c.Name == awm.Word.Category.Name)
-                    .First();
+                    .FirstOrDefault(c => c.Name == awm.SelectedCategoryName);
             }
 
             context.Words.Add(awm.Word);

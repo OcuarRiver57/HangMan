@@ -1,5 +1,9 @@
-﻿@{
-    ViewData["Title"] = "HangMan";
-}
-@model PlayerPreferenceModel
-    <p>Game Page</p>
+﻿@model GameModel
+
+<div id="game-root"
+     data-word="@Model.Word"
+     data-health="@Model.Health">
+</div>
+
+<link rel="stylesheet" href="~/css/hangman.css" />
+<script src="~/js/hangman.js"></script>

@@ -32,7 +32,5 @@ namespace HangMan.Models
                 return (float) this.MistakesWithWin / this.GamesWon;
             }
         }
-
-        public PlayerPreferenceModel Preferences { get; set; } = new PlayerPreferenceModel();
     }
 }
