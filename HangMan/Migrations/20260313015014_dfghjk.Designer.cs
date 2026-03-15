@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HangMan.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260308101900_m")]
-    partial class m
+    [Migration("20260313015014_dfghjk")]
+    partial class dfghjk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,6 +139,9 @@ namespace HangMan.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("DrugIsGeneric")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int>("Health")
                         .HasColumnType("int");
 
@@ -165,6 +168,9 @@ namespace HangMan.Migrations
                     b.Property<string>("DrugClassification")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<bool>("DrugIsGeneric")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Spelling")
                         .IsRequired()

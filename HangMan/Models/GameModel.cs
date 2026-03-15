@@ -27,5 +27,11 @@
                 return Answer.OrderBy(c => c).SequenceEqual(CorrectGuesses.OrderBy(c => c));
             }
         }
+
+        public string Category { get; set; } = string.Empty;
+
+        public string DrugClassification { get; set; } = string.Empty;
+
+        public bool DrugIsGeneric { get; set; } = false;
     }
 }

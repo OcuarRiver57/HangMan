@@ -38,17 +38,19 @@ namespace HangMan.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult FilterDictionary(FilteredWordsModel fw)
         {
+            var query = this.context.Words.Include(w => w.Category).AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(fw.Search))  
-                fw.Words = this.context.Words
-                    .Include(w => w.Category)
-                    .Where(w => w.Spelling.ToUpper().Contains(fw.Search.ToUpper()))
-                    .ToList();
+            if (!string.IsNullOrWhiteSpace(fw.Search))
+            {
+                query = query.Where(w => w.Spelling.ToUpper().Contains(fw.Search.ToUpper()));
+            }
 
-            else
-                fw.Words = this.context.Words
-                    .Include(w => w.Category)
-                    .ToList();
+            if (!string.IsNullOrWhiteSpace(fw.CategorySearch))
+            {
+                query = query.Where(w => w.Category != null && w.Category.Name.ToUpper().Contains(fw.CategorySearch.ToUpper()));
+            }
+
+            fw.Words = query.ToList();
 
             return View("Dictionary", fw);
         }
@@ -82,6 +84,9 @@ namespace HangMan.Controllers
                 context.SaveChanges();
             }
                 
+            // Ensure strings are not null for the view
+            pref.CustomWord = pref.CustomWord ?? string.Empty;
+            pref.Category = pref.Category ?? string.Empty;
 
             PlayerPreferenceViewModel p = new(pref, context.Categories.ToList());
             return View(p);
@@ -91,20 +96,40 @@ namespace HangMan.Controllers
         [Authorize]
         public IActionResult PlayerSettings(PlayerPreferenceViewModel p, string action)
         {
-            if(string.IsNullOrWhiteSpace(p.Preferences.PlayerId))
-                p.Preferences.PlayerId = User.Identity.Name;
+            var userId = userManager.GetUserId(User);
+            if (!string.IsNullOrWhiteSpace(userId))
+                p.Preferences.PlayerId = userId;
+
+            // Ensure string values are not null to prevent database insertion errors
+            p.Preferences.CustomWord = p.Preferences.CustomWord ?? string.Empty;
+            p.Preferences.Category = p.Preferences.Category ?? string.Empty;
 
             if (context.PlayerPreferences.Any(m => m.PlayerId == p.Preferences.PlayerId))
             {
                 var dm = context.PlayerPreferences.Find(p.Preferences.PlayerId);
-                context.PlayerPreferences.Remove(dm);
+                if (dm != null)
+                    context.PlayerPreferences.Remove(dm);
             }
-            context.PlayerPreferences.Add(p.Preferences);
-            if(action == "start")
-                return RedirectToAction("Index", "Game", p.Preferences);
 
-            else
-                return View(p);
+            context.PlayerPreferences.Add(p.Preferences);
+            context.SaveChanges();
+
+            if (action == "start")
+            {
+                return RedirectToAction("Index", "Game", new
+                {
+                    useCustomSettings = true,
+                    customWord = p.Preferences.CustomWord,
+                    maxWordLength = p.Preferences.MaxWordLength,
+                    minWordLength = p.Preferences.MinWordLength,
+                    health = p.Preferences.Health,
+                    category = p.Preferences.Category,
+                    drugIsGeneric = p.Preferences.DrugIsGeneric
+                });
+            }
+
+            p.Categories = context.Categories.ToList();
+            return View(p);
         }
 
         public IActionResult AddWord()
@@ -131,6 +156,13 @@ namespace HangMan.Controllers
             {
                 awm.Word.Category = context.Categories
                     .FirstOrDefault(c => c.Name == awm.SelectedCategoryName);
+            }
+
+            var isDrugCategory = awm.Word.Category?.Name?.ToLower() == "drug" || awm.Word.Category?.Name?.ToLower() == "drugs";
+            if (!isDrugCategory)
+            {
+                awm.Word.DrugClassification = "Not a drug";
+                awm.Word.DrugIsGeneric = false;
             }
 
             context.Words.Add(awm.Word);

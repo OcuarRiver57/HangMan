@@ -27,15 +27,32 @@
 
         <label asp-for="Preferences.Category">Category:</label>
         <select id="CategoryDropDown" asp-for="Preferences.Category" required>
-            @foreach(CategoryModel c in Model.Categories)
-                {
-                <option value=@c>@c.Name</option>
-                }
+            @foreach (CategoryModel c in Model.Categories)
+            {
+                <option value=@c.Name>@c.Name</option>
+            }
         </select>
         <br />
+
+        <div id="DrugGenericFilter" style="display:none;">
+            <label asp-for="Preferences.DrugIsGeneric">Play Generic Drug Words:</label>
+            <input type="checkbox" asp-for="Preferences.DrugIsGeneric" />
+            <br />
+        </div>
 
         <button type="submit" name="action" value="save" class="btn btn-success">Save</button>
         <button type="submit" name="action" value="start" class="btn btn-primary">Start Game</button>
 
     </form>
 </body>
+
+<script>
+    function updateDrugGenericFilterVisibility() {
+        const category = (document.getElementById("CategoryDropDown").value || "").toLowerCase();
+        const show = category === "drug" || category === "drugs";
+        document.getElementById("DrugGenericFilter").style.display = show ? "block" : "none";
+    }
+
+    document.getElementById("CategoryDropDown").addEventListener("change", updateDrugGenericFilterVisibility);
+    updateDrugGenericFilterVisibility();
+</script>

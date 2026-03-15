@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace HangMan.Migrations
 {
     /// <inheritdoc />
-    public partial class m : Migration
+    public partial class dfghjk : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -86,7 +86,8 @@ namespace HangMan.Migrations
                     MaxWordLength = table.Column<int>(type: "int", nullable: false),
                     MinWordLength = table.Column<int>(type: "int", nullable: false),
                     Health = table.Column<int>(type: "int", nullable: false),
-                    Category = table.Column<string>(type: "longtext", nullable: false)
+                    Category = table.Column<string>(type: "longtext", nullable: false),
+                    DrugIsGeneric = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -213,7 +214,8 @@ namespace HangMan.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Spelling = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    DrugClassification = table.Column<string>(type: "longtext", nullable: false)
+                    DrugClassification = table.Column<string>(type: "longtext", nullable: false),
+                    DrugIsGeneric = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {

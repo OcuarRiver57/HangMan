@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace HangMan.Models
 {
@@ -22,7 +23,7 @@ namespace HangMan.Models
         {
             get
             {
-                return this.Spelling.Length;
+                return string.IsNullOrEmpty(this.Spelling) ? 0 : this.Spelling.Count(c => !char.IsWhiteSpace(c));
             }
         }
         public int VowelCount
@@ -52,6 +53,8 @@ namespace HangMan.Models
         }
 
         public string DrugClassification { get; set; } = "Not a drug";
+
+        public bool DrugIsGeneric { get; set; } = false;
 
     }
 }

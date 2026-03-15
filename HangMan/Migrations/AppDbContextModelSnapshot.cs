@@ -136,6 +136,9 @@ namespace HangMan.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("DrugIsGeneric")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int>("Health")
                         .HasColumnType("int");
 
@@ -162,6 +165,9 @@ namespace HangMan.Migrations
                     b.Property<string>("DrugClassification")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<bool>("DrugIsGeneric")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Spelling")
                         .IsRequired()

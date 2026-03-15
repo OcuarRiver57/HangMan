@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HangMan.Models
@@ -20,6 +19,8 @@ namespace HangMan.Models
         public int Health { get; set; } = 0;
 
         public string Category { get; set; } = string.Empty;
+
+        public bool DrugIsGeneric { get; set; } = false;
 
     }
 }

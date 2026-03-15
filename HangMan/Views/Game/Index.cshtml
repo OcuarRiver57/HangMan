@@ -2,7 +2,12 @@
 
 <div id="game-root"
      data-word="@Model.Word"
-     data-health="@Model.Health">
+     data-health="@Model.Health"
+     data-category="@Model.Category"
+     data-drug-classification="@Model.DrugClassification"
+     data-drug-is-generic="@Model.DrugIsGeneric"
+     data-is-custom="@Model.IsCustom"
+     data-new-game-url="@Url.Action("NewGame", "Game")">
 </div>
 
 <link rel="stylesheet" href="~/css/hangman.css" />

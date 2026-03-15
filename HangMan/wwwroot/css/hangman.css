@@ -2,32 +2,110 @@
     font-size: 2rem;
     letter-spacing: 10px;
     text-align: center;
+    font-family: monospace;
     margin-bottom: 20px;
+}
+
+/* ── Health boxes ── */
+.health-boxes {
+    display: flex;
+    gap: 6px;
+}
+
+.health-box {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+}
+
+.health-box--alive {
+    background-color: #e03535;
+}
+
+.health-box--lost {
+    background-color: #b0b0b0;
 }
 
 .health-display,
 .incorrect-display {
     text-align: center;
     margin-bottom: 10px;
+    color: #666;
+}
+
+.incorrect-display {
+    min-height: 1.5em;
+}
+
+.guess-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
 }
 
 .guess-input {
-    display: block;
-    margin: 10px auto;
     width: 60px;
     text-align: center;
     font-size: 1.2rem;
+    padding: 6px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
 }
 
 .guess-button {
-    display: block;
-    margin: 10px auto;
     padding: 8px 20px;
     font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    background-color: #2c7be5;
+    color: white;
+    border-radius: 4px;
+}
+
+.guess-button:disabled {
+    background-color: #aaa;
+    cursor: default;
+}
+
+/* ── Win/loss message ── */
+.game-message {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    min-height: 2em;
+    margin-top: 10px;
+}
+
+/* ── Drug classification (bottom-left) ── */
+.drug-classification {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: #555;
+    font-style: italic;
+}
+
+/* ── Header ── */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.category-display {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    text-transform: capitalize;
 }
 
 #game-root {
-    max-width: 500px;
-    margin: auto;
-    padding-top: 40px;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: sans-serif;
+    position: relative;
+    min-height: 300px;
 }

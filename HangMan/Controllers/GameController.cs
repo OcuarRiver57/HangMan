@@ -3,7 +3,9 @@ using HangMan.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Crud;
 using Mysqlx.Expr;
+using System.Threading.Tasks;
 
 namespace HangMan.Controllers
 {
@@ -19,30 +21,37 @@ namespace HangMan.Controllers
         }
 
 
-        public IActionResult Index()
+        public IActionResult Index(
+            bool useCustomSettings = false,
+            string customWord = "",
+            int maxWordLength = 0,
+            int minWordLength = 0,
+            int health = 0,
+            string category = "",
+            bool drugIsGeneric = false)
         {
-            GameModel gm = new();
-            gm.Word = GetRandomWord();
-            gm.Health = gm.Word.Length > 5 ? gm.Word.Length - 2 : 3;
-            return View(gm);
+            if (useCustomSettings)
+            {
+                var prefs = new PlayerPreferenceModel
+                {
+                    CustomWord = customWord,
+                    MaxWordLength = maxWordLength,
+                    MinWordLength = minWordLength,
+                    Health = health,
+                    Category = category,
+                    DrugIsGeneric = drugIsGeneric
+                };
+
+                return View(BuildGameFromPreferences(prefs));
+            }
+
+            return View(BuildDefaultGame());
         }
+
         [HttpPost]
         public IActionResult Index(PlayerPreferenceModel p)
         {
-            GameModel gm = new();
-            gm.IsCustom = true;
-
-            if (!string.IsNullOrWhiteSpace(p.CustomWord))
-                gm.Word = p.CustomWord;
-            else
-                gm.Word = GetRandomWord(p.MaxWordLength, p.MinWordLength, p.Category);
-
-            if (p.Health > 0)
-                gm.Health = p.Health;
-            else
-                gm.Health = gm.Word.Length > 5 ? gm.Word.Length - 2 : 3;
-
-            return View(gm);
+            return View(BuildGameFromPreferences(p));
         }
 
         [HttpPost]
@@ -62,7 +71,7 @@ namespace HangMan.Controllers
                 else
                     user.GamesLost += 1;
 
-                if(user.LongestWord.Length < gm.Word.Length)
+                if (user.LongestWord.Length < gm.Word.Length)
                     user.LongestWord = gm.Word;
             }
 
@@ -72,9 +81,66 @@ namespace HangMan.Controllers
                 return View("Index");
         }
 
-        private string GetRandomWord(int min = 0, int max = 0, string cat = "")
-        { // used ai to make my code run faster by avoiding processing heavy operations like converting the entire db with .ToList()
-            // Base query
+        [HttpPost]
+        public async Task<IActionResult> NewGame(string word, int mistakes, bool won, bool isCustom)
+        {
+            if (!isCustom)
+            {
+                await UpdatePlayerStats(word, mistakes, won);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private GameModel BuildDefaultGame()
+        {
+            GameModel gm = new();
+            var wordInfo = GetRandomWord();
+            if (wordInfo != null)
+            {
+                gm.Word = wordInfo.Spelling;
+                gm.Category = wordInfo.Category.Name;
+                gm.DrugClassification = wordInfo.DrugClassification;
+                gm.DrugIsGeneric = wordInfo.DrugIsGeneric;
+            }
+
+            gm.Health = gm.Word.Length > 5 ? gm.Word.Length - 2 : 3;
+            return gm;
+        }
+
+        private GameModel BuildGameFromPreferences(PlayerPreferenceModel p)
+        {
+            GameModel gm = new();
+            gm.IsCustom = true;
+
+            if (!string.IsNullOrWhiteSpace(p.CustomWord))
+            {
+                gm.Word = p.CustomWord;
+                gm.Category = p.Category;
+                gm.DrugIsGeneric = p.DrugIsGeneric;
+            }
+            else
+            {
+                var wordInfo = GetRandomWord(p.MaxWordLength, p.MinWordLength, p.Category, p.DrugIsGeneric);
+                if (wordInfo != null)
+                {
+                    gm.Word = wordInfo.Spelling;
+                    gm.Category = wordInfo.Category.Name;
+                    gm.DrugClassification = wordInfo.DrugClassification;
+                    gm.DrugIsGeneric = wordInfo.DrugIsGeneric;
+                }
+            }
+
+            if (p.Health > 0)
+                gm.Health = p.Health;
+            else
+                gm.Health = gm.Word.Length > 5 ? gm.Word.Length - 2 : 3;
+
+            return gm;
+        }
+
+        private WordModel? GetRandomWord(int min = 0, int max = 0, string cat = "", bool drugIsGeneric = false)
+        { 
             var baseQuery = context.Words.Include(w => w.Category).AsQueryable();
 
             if (min > 0)
@@ -83,27 +149,49 @@ namespace HangMan.Controllers
             if (max > 0)
                 baseQuery = baseQuery.Where(w => w.Length < max);
 
-            // Try category filter first
             IQueryable<WordModel> filteredQuery = baseQuery;
 
             if (!string.IsNullOrEmpty(cat))
+            {
                 filteredQuery = filteredQuery.Where(w => w.Category.Name == cat);
 
-            // Try to get a random word WITH the category
-            var word = filteredQuery
-                .OrderBy(x => Guid.NewGuid())
-                .Select(x => x.Spelling)
-                .FirstOrDefault();
+                if (cat.ToLower() == "drug" || cat.ToLower() == "drugs")
+                {
+                    filteredQuery = filteredQuery.Where(w => w.DrugIsGeneric == drugIsGeneric);
+                }
+            }
 
-            if (word != null)
-                return word;
+            int count = filteredQuery.Count();
+            if (count > 0)
+                return filteredQuery.Skip(Random.Shared.Next(count)).FirstOrDefault();
 
-            // Category failed → fallback to ALL categories
-            return baseQuery
-                .OrderBy(x => Guid.NewGuid())
-                .Select(x => x.Spelling)
-                .FirstOrDefault();
+            int baseCount = baseQuery.Count();
+            return baseCount > 0 ? baseQuery.Skip(Random.Shared.Next(baseCount)).FirstOrDefault() : null;
         }
 
+        private async Task UpdatePlayerStats(string word, int mistakes, bool won)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user != null)
+            {
+
+                if (won)
+                {
+                    user.GamesWon++;
+                    user.MistakesWithWin += mistakes;
+                    if (!string.IsNullOrEmpty(word) && word.Length > user.LongestWord.Length)
+                        user.LongestWord = word;
+                }
+                else
+                {
+                    user.GamesLost++;
+                }
+
+                user.GamesPlayed++;
+                user.MistakesTotal += mistakes;
+
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

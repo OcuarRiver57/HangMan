@@ -36,9 +36,13 @@ Model
         </div>
 
         <div style="display:none;" id="DrugClassificationInput">
-            <label asp-for="Word.Category.Description">Drug Classification:</label>
-            <input type="text" asp-for="Word.Category.Description" placeholder="Please enter category description">
-            <span asp-validation-for="Word.Category.Description"></span>
+            <label asp-for="Word.DrugClassification">Drug Classification:</label>
+            <input type="text" asp-for="Word.DrugClassification" placeholder="Please enter drug classification">
+            <span asp-validation-for="Word.DrugClassification"></span>
+            <br />
+
+            <label asp-for="Word.DrugIsGeneric">Is Generic:</label>
+            <input type="checkbox" asp-for="Word.DrugIsGeneric" />
             <br />
         </div>
 
@@ -46,24 +50,23 @@ Model
     </form>
 </div>
 <script>
-    document.getElementById("CategoryDropDown").addEventListener("change", function () {
-        const showValue = "NewCategory1234567898765432345678765432134567876543";
-        const container = document.getElementById("AddNewCatagory");
+    const newCategoryValue = "NewCategory1234567898765432345678765432134567876543";
 
-        if (this.value === showValue) {
-            container.style.display = "block";
-        } else {
-            container.style.display = "none";
-        }
-    });
-    document.getElementById("CategoryName").addEventListener("change", function () {
-        const showValue = "drug";
-        const container = document.getElementById("DrugClassificationInput");
+    function updateAddWordVisibility() {
+        const dropdown = document.getElementById("CategoryDropDown");
+        const categoryName = document.getElementById("CategoryName");
+        const addNewCategoryContainer = document.getElementById("AddNewCatagory");
+        const drugContainer = document.getElementById("DrugClassificationInput");
 
-        if (this.value === showValue) {
-            container.style.display = "block";
-        } else {
-            container.style.display = "none";
-        }
-    });
+        const isNewCategory = dropdown.value === newCategoryValue;
+        addNewCategoryContainer.style.display = isNewCategory ? "block" : "none";
+
+        const selectedName = isNewCategory ? (categoryName.value || "") : (dropdown.value || "");
+        const isDrug = selectedName.toLowerCase() === "drug" || selectedName.toLowerCase() === "drugs";
+        drugContainer.style.display = isDrug ? "block" : "none";
+    }
+
+    document.getElementById("CategoryDropDown").addEventListener("change", updateAddWordVisibility);
+    document.getElementById("CategoryName").addEventListener("input", updateAddWordVisibility);
+    updateAddWordVisibility();
 </script>
